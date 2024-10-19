@@ -49,24 +49,63 @@ async def upload_file(file: UploadFile = File(...)):
         return {"error": str(e)}
 
 
-@app.post("/generate_flashcards")
-async def generate_flashcards(num_cards: int = 5):
-    contexts = retrieve_diverse_contexts(num_cards)
-    flashcards = []
-    used_questions = set()
+from fastapi import HTTPException
+from pydantic import BaseModel
+from typing import List
 
-    for context in contexts:
-        for _ in range(3):  # Try up to 3 times to get a unique question
+class FlashcardRequest(BaseModel):
+    topic: str
+    num_cards: int = 5
+
+class Flashcard(BaseModel):
+    question: str
+    answer: str
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+@app.post("/generate_flashcards", response_model=dict)
+async def generate_flashcards(request: FlashcardRequest):
+    logger.debug(f"Received request: {request}")
+    try:
+        contexts = retrieve_diverse_contexts(request.topic, request.num_cards)
+        logger.debug(f"Retrieved {len(contexts)} contexts")
+        
+        if not contexts:
+            logger.warning("No contexts found for the given topic")
+            raise HTTPException(status_code=404, detail="No relevant content found for the given topic.")
+
+        flashcards = []
+        used_questions = set()
+
+        # Attempt to generate up to request.num_cards flashcards
+        attempts = 0
+        max_attempts = request.num_cards * 3  # Allow for multiple attempts per desired card
+
+        while len(flashcards) < request.num_cards and attempts < max_attempts:
+            context = contexts[attempts % len(contexts)]  # Cycle through available contexts
+            logger.debug(f"Processing context: {context[:100]}...")  # Log first 100 chars of context
+            
             qa_pair = generate_qa_pair(context)
-            if qa_pair is None:
-                continue
-            question, answer = qa_pair
-            if question and answer and question not in used_questions:
-                flashcards.append(Flashcard(question=question, answer=answer))
-                used_questions.add(question)
-                break
+            logger.debug(f"Generated QA pair: {qa_pair}")
+            
+            if qa_pair is not None:
+                question, answer = qa_pair
+                if question and answer and question not in used_questions:
+                    flashcards.append(Flashcard(question=question, answer=answer))
+                    used_questions.add(question)
+            
+            attempts += 1
 
-    if not flashcards:
-        return {"error": "No flashcards could be generated. Please try again or upload more diverse content."}
+        if not flashcards:
+            logger.warning("Failed to generate any flashcards")
+            raise HTTPException(status_code=500, detail="Failed to generate any flashcards. Please try again or upload more diverse content.")
 
-    return {"flashcards": flashcards}
+        logger.info(f"Generated {len(flashcards)} flashcards")
+        return {"flashcards": flashcards}
+
+    except Exception as e:
+        logger.error(f"An error occurred: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

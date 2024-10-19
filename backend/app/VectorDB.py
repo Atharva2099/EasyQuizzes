@@ -19,9 +19,27 @@ def retrieve_context(query: str, n_results: int = 1):
     return results['documents'][0] if results['documents'] else []
 
 # Add this new function
-def retrieve_diverse_contexts(n_contexts: int = 5):
-    all_docs = collection.get()['documents']
-    if not all_docs:
-        return []
-    step = max(1, len(all_docs) // n_contexts)
-    return [all_docs[i] for i in range(0, len(all_docs), step)][:n_contexts]
+import logging
+from chromadb.errors import NotEnoughElementsException
+
+logger = logging.getLogger(__name__)
+
+def retrieve_diverse_contexts(topic: str, n_contexts: int = 5):
+    logger.debug(f"Retrieving contexts for topic: {topic}, n_contexts: {n_contexts}")
+    try:
+        results = collection.query(
+            query_texts=[topic],
+            n_results=n_contexts
+        )
+        contexts = results['documents'][0] if results['documents'] else []
+    except NotEnoughElementsException:
+        # If not enough elements, retrieve all available contexts
+        logger.warning(f"Not enough contexts available. Retrieving all available contexts.")
+        results = collection.query(
+            query_texts=[topic],
+            n_results=1  # Retrieve at least one context
+        )
+        contexts = results['documents'][0] if results['documents'] else []
+    
+    logger.debug(f"Retrieved {len(contexts)} contexts")
+    return contexts

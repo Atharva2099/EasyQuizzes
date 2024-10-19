@@ -42,17 +42,24 @@ input[type="file"] {
     margin-top: 20px;
 }
 
-.flashcard {
-    background-color: #fff;
+#flashcard-display {
+    min-height: 200px;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 10px;
+}
+
+#navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flashcard {
     cursor: pointer;
 }
 
-.flashcard .answer {
-    display: none;
+.answer {
     margin-top: 10px;
     font-style: italic;
 }
