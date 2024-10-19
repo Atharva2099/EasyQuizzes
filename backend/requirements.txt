@@ -1,0 +1,8 @@
+pytesseract
+Pillow
+chromadb
+reflex
+groq
+python-dotenv
+pydantic==1.9.0
+Fastapi
