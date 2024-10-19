@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-python-multipart
-pydantic
-chromadb
-groq
-python-dotenv
-PyPDF2
+fastapi==0.96.1
+uvicorn==0.20.0
+python-multipart==0.0.5
+pydantic==1.10.12
+chromadb==0.3.23
+groq==0.11.0
+python-dotenv==1.0.0
+PyPDF2==3.0.1
