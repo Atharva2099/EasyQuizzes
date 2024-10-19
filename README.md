@@ -32,6 +32,12 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 3. Install dependencies:
 
    pip install -r requirements.txt
+
+   or
+2. Create and activate the Conda environment:
+     Run:
+     conda env create -f environment.yml
+     conda activate flashcard-env
    
 4. Set up environment variables:
 
@@ -55,26 +61,6 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 5. Click on a flashcard to reveal the answer.
 
 ## Project Structure
-
-flashcard-generator/
-├── backend/
-│   ├── app/
-│   │   ├── init.py
-│   │   ├── main.py
-│   │   ├── models.py
-│   │   ├── ocr.py
-│   │   ├── VectorDB.py
-│   │   └── llm.py
-│   └── init.py
-├── frontend/
-│   ├── index.html
-│   ├── styles.css
-│   └── script.js
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── README.md
-
 
 This structure represents the main directories and files in the project:
 - `backend/`: Contains the backend logic.
