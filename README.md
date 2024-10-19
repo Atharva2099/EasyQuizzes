@@ -26,18 +26,19 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 1. Clone the repository:
    
 2. Create a virtual environment:
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   - python -m venv venv
+   - source venv/bin/activate  # On Windows: venv\Scripts\activate
    
 3. Install dependencies:
 
-   pip install -r requirements.txt
+   - pip install -r requirements.txt
 
    or
+   
 2. Create and activate the Conda environment:
-     Run:
-     conda env create -f environment.yml
-     conda activate flashcard-env
+     
+     - conda env create -f environment.yml
+     - conda activate flashcard-env
    
 4. Set up environment variables:
 
