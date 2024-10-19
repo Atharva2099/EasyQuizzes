@@ -1,0 +1,6 @@
+transformers
+torch
+pytesseract
+Pillow
+chromadb
+reflex
