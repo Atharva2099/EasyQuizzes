@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Generator</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Flashcard Generator</h1>
+        <div id="upload-section">
+            <input type="file" id="file-upload" accept=".pdf">
+            <button id="upload-btn">Upload PDF</button>
+        </div>
+        <div id="generate-section" style="display: none;">
+            <button id="generate-btn">Generate Flashcards</button>
+        </div>
+        <div id="flashcards-container"></div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
