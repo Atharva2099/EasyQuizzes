@@ -75,6 +75,26 @@ flashcard-generator/
 ├── requirements.txt
 └── README.md
 
+
+This structure represents the main directories and files in the project:
+- `backend/`: Contains the backend logic.
+  - `app/`: Contains Python scripts for backend functionality.
+    - `__init__.py`: Initializes the Python package.
+    - `main.py`: The entry point of the backend application.
+    - `models.py`: Defines database or data models.
+    - `ocr.py`: Script for Optical Character Recognition (OCR).
+    - `VectorDB.py`: Vector database management.
+    - `llm.py`: Logic for Large Language Model (LLM) interactions.
+- `frontend/`: Contains frontend files.
+  - `index.html`: The main HTML file.
+  - `styles.css`: The CSS file for styling.
+  - `script.js`: The JavaScript file for frontend functionality.
+- `.env.example`: Example of environment variables.
+- `.gitignore`: Files and directories to be ignored by Git.
+- `requirements.txt`: List of dependencies for the backend.
+- `README.md`: Project documentation.
+
+
 ## Technologies Used
 
 - Backend: FastAPI, ChromaDB, Groq API
