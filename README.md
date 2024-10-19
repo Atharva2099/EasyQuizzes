@@ -2,3 +2,91 @@ Hi CalHacks 11.0
 
 
 This is Byte Builder Attempting a flash card Generating AI 
+
+
+# Flashcard Generator
+
+Flashcard Generator is a web application that allows users to upload PDF documents and generate flashcards based on the content. It uses AI to create multiple-choice questions and answers, making it an excellent tool for study and revision.
+
+## Features
+
+- PDF upload and processing
+- AI-powered flashcard generation
+- Multiple-choice question format
+- Topic-specific flashcard creation
+- Interactive flashcard interface
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Groq API key (sign up at https://www.groq.com)
+
+## Installation
+
+1. Clone the repository:
+   
+2. Create a virtual environment:
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   
+3. Install dependencies:
+
+   pip install -r requirements.txt
+   
+4. Set up environment variables:
+
+- Open `.env` and replace `your_api_key_here` with your actual Groq API key
+
+## Running the Application
+
+1. Start the FastAPI server:
+   
+   python -m uvicorn backend.app.main:app --reload
+
+
+2. Open a web browser and navigate to `http://Localhost:8000` or whichever is provided by CLI
+
+## Usage
+
+1. Upload a PDF file using the "Upload PDF" button.
+2. Enter a topic and the number of flashcards you want to generate.
+3. Click "Generate Flashcards" to create your flashcards.
+4. Navigate through the flashcards using the "Previous" and "Next" buttons.
+5. Click on a flashcard to reveal the answer.
+
+## Project Structure
+
+flashcard-generator/
+├── backend/
+│   ├── app/
+│   │   ├── init.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── ocr.py
+│   │   ├── VectorDB.py
+│   │   └── llm.py
+│   └── init.py
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   └── script.js
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
+
+## Technologies Used
+
+- Backend: FastAPI, ChromaDB, Groq API
+- Frontend: HTML, CSS, JavaScript
+- PDF Processing: PyPDF2
+- Environment Management: python-dotenv
+
+## Troubleshooting
+
+If you encounter any issues:
+- Ensure you're using Python 3.8 or higher
+- Verify that all dependencies are correctly installed
+- Check that your `.env` file contains the correct Groq API key
+- Make sure you have an active internet connection for API calls
+
