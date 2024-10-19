@@ -1,6 +1,0 @@
-pytesseract
-Pillow
-chromadb
-reflex
-groq
-python-dotenv
