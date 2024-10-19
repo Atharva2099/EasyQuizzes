@@ -1,7 +1,19 @@
-Hi CalHacks 11.0
+# ByteBuilder Flashcard Generator - Cal Hacks 11.0
 
+ByteBuilder presents a Flashcard Generator, developed for Cal Hacks 11.0. This web application allows users to upload PDF documents and generate AI-powered flashcards, creating an excellent tool for study and revision.
 
-This is Byte Builder Attempting a flash card Generating AI 
+## Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Technologies Used](#technologies-used)
+- [Troubleshooting](#troubleshooting)
+- [Future Improvements](#future-improvements)
+
+[Rest of your README content here]
 
 
 # Flashcard Generator
@@ -96,4 +108,11 @@ If you encounter any issues:
 - Verify that all dependencies are correctly installed
 - Check that your `.env` file contains the correct Groq API key
 - Make sure you have an active internet connection for API calls
+
+## Future Improvements
+
+- Implement user accounts for saving and managing flashcard sets
+- Add support for more file formats beyond PDF
+- Enhance the AI model for even more accurate and diverse question generation
+- Develop a mobile app version for on-the-go studying
 
