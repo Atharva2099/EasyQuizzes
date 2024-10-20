@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from .models import Flashcard
@@ -11,7 +11,6 @@ from .ocr import extract_text_from_pdf
 import os
 import logging
 import asyncio
-
 
 app = FastAPI()
 
@@ -26,9 +25,8 @@ app.add_middleware(
 
 # Get the directory of the current file
 current_dir = os.path.dirname(os.path.realpath(__file__))
-# Go up two levels to reach the project root, then into the frontend directory
-frontend_dir = os.path.join(current_dir, "..", "..", "public")
-#frontend_dir = os.path.join(current_dir, "..", "..", "frontend")
+# Go up two levels to reach the project root, then into the public directory
+frontend_dir = os.path.join(current_dir, "..", "public")
 
 # Mount the static files directory
 app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
@@ -44,8 +42,6 @@ progress = {}
 async def read_root():
     return FileResponse(os.path.join(frontend_dir, "index.html"))
 
-
-
 @app.post("/upload")
 async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     logger.info(f"Received file upload request: {file.filename}")
@@ -60,10 +56,10 @@ async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File
         progress[file_id] = 0
         background_tasks.add_task(process_pdf, file_path, file_id)
         logger.info(f"Background task added for file: {file_id}")
-        return {"message": "File upload started. Processing in background.", "file_id": file_id}
+        return JSONResponse(content={"message": "File upload started. Processing in background.", "file_id": file_id})
     except Exception as e:
         logger.error(f"Error during file upload: {str(e)}", exc_info=True)
-        return {"error": f"An error occurred during file upload: {str(e)}"}
+        return JSONResponse(content={"error": f"An error occurred during file upload: {str(e)}"}, status_code=500)
 
 async def process_pdf(file_path: str, file_id: str):
     try:
@@ -91,14 +87,14 @@ async def process_pdf(file_path: str, file_id: str):
 async def get_progress(file_id: str):
     if file_id not in progress:
         raise HTTPException(status_code=404, detail="File not found")
-    return {"progress": progress[file_id]}
+    return JSONResponse(content={"progress": progress[file_id]})
 
 class FlashcardRequest(BaseModel):
     topic: str
     num_cards: int = 5
     page: Optional[int] = 1
 
-@app.post("/generate_flashcards", response_model=dict)
+@app.post("/generate_flashcards")
 async def generate_flashcards(request: FlashcardRequest):
     logger.debug(f"Received request: {request}")
     try:
@@ -107,7 +103,7 @@ async def generate_flashcards(request: FlashcardRequest):
         
         if not contexts:
             logger.warning("No contexts found for the given topic")
-            raise HTTPException(status_code=404, detail="No relevant content found for the given topic.")
+            return JSONResponse(content={"error": "No relevant content found for the given topic."}, status_code=404)
 
         flashcards = []
         used_questions = set()
@@ -121,7 +117,7 @@ async def generate_flashcards(request: FlashcardRequest):
             if qa_pair is not None:
                 question, answer = qa_pair
                 if question and answer and question not in used_questions:
-                    flashcards.append(Flashcard(question=question, answer=answer))
+                    flashcards.append({"question": question, "answer": answer})
                     used_questions.add(question)
             
             if len(flashcards) >= request.num_cards:
@@ -129,20 +125,16 @@ async def generate_flashcards(request: FlashcardRequest):
 
         if not flashcards:
             logger.warning("Failed to generate any flashcards")
-            raise HTTPException(status_code=500, detail="Failed to generate any flashcards. The AI model might be having difficulties. Please try again with a different topic or upload more diverse content.")
+            return JSONResponse(content={"error": "Failed to generate any flashcards. The AI model might be having difficulties. Please try again with a different topic or upload more diverse content."}, status_code=500)
 
         total_pages = -(-len(contexts) // cards_per_page)  # Ceiling division
         logger.info(f"Generated {len(flashcards)} flashcards")
-        return {
+        return JSONResponse(content={
             "flashcards": flashcards,
             "current_page": request.page,
             "total_pages": total_pages
-        }
+        })
 
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"An error occurred while generating flashcards: {str(e)}")
-
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        return JSONResponse(content={"error": f"An error occurred while generating flashcards: {str(e)}"}, status_code=500)
