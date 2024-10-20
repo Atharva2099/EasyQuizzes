@@ -29,11 +29,13 @@ app.add_middleware(
 
 # Get the directory of the current file
 current_dir = os.path.dirname(os.path.realpath(__file__))
-# Go up two levels to reach the project root, then into the frontend directory
-frontend_dir = os.path.join(current_dir, "..", "..", "frontend")
+# Go up two levels to reach the project root
+project_root = os.path.dirname(os.path.dirname(current_dir))
+# Path to the frontend directory
+frontend_dir = os.path.join(project_root, "frontend")
 
 # Mount the static files directory
-app.mount("/", StaticFiles(directory=frontend_dir), name="frontend")
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -147,5 +149,3 @@ async def test_endpoint():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
-
-
