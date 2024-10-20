@@ -9,6 +9,7 @@ dependencies:
   - python-multipart=0.0.5
   - pydantic=1.10.12
   - python-dotenv=1.0.0
+  - mangum
   - pip
   - pip:
     - chromadb==0.3.23
