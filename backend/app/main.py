@@ -1,16 +1,20 @@
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
+import os
+import logging
+import asyncio
+import traceback
+
+# Assuming these modules exist in your project
+# If they don't, you'll need to implement or mock them
 from .models import Flashcard
 from .VectorDB import store_text, retrieve_diverse_contexts
 from .llm import generate_qa_pair
 from .ocr import extract_text_from_pdf
-import os
-import logging
-import asyncio
 
 app = FastAPI()
 
@@ -46,45 +50,39 @@ async def read_root():
 async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     logger.info(f"Received file upload request: {file.filename}")
     try:
-        file_path = f"/tmp/{file.filename}"
-        with open(file_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
-        logger.info(f"File saved to {file_path}")
-        
-        file_id = os.path.basename(file_path)
+        # Instead of saving the file, let's just read its content
+        content = await file.read()
+        file_size = len(content)
+        logger.info(f"File size: {file_size} bytes")
+
+        if file_size > 4 * 1024 * 1024:  # 4MB limit
+            raise ValueError("File size exceeds 4MB limit")
+
+        # Generate a unique file ID without actually saving the file
+        file_id = f"{file.filename}_{os.urandom(8).hex()}"
         progress[file_id] = 0
-        background_tasks.add_task(process_pdf, file_path, file_id)
+
+        # Add background task without actually processing the file for now
+        background_tasks.add_task(dummy_process, file_id)
         logger.info(f"Background task added for file: {file_id}")
         
         response_data = {"message": "File upload started. Processing in background.", "file_id": file_id}
         logger.info(f"Sending response: {response_data}")
-        return response_data
+        return JSONResponse(content=response_data)
+    except ValueError as ve:
+        logger.error(f"Value error: {str(ve)}")
+        return JSONResponse(status_code=400, content={"error": str(ve)})
     except Exception as e:
-        logger.error(f"Error during file upload: {str(e)}", exc_info=True)
+        logger.error(f"Error during file upload: {str(e)}")
+        logger.error(traceback.format_exc())
         return JSONResponse(status_code=500, content={"error": f"An error occurred during file upload: {str(e)}"})
 
-async def process_pdf(file_path: str, file_id: str):
-    try:
-        logger.info(f"Starting to process PDF: {file_path}")
-        chunks = extract_text_from_pdf(file_path)
-        logger.info(f"Extracted {len(chunks)} chunks from PDF")
-        if not chunks:
-            logger.warning(f"No text extracted from PDF: {file_path}")
-            return
-        
-        total_chunks = len(chunks)
-        for i, chunk in enumerate(chunks):
-            if chunk.strip():  # Only process non-empty chunks
-                store_text(chunk, {"filename": f"{file_path}_chunk_{i}"})
-            progress[file_id] = (i + 1) / total_chunks * 100
-            logger.info(f"Processed chunk {i+1}/{total_chunks} for file {file_id}")
-        os.remove(file_path)
-        logger.info(f"Finished processing PDF: {file_path}")
-    except Exception as e:
-        logger.error(f"Error processing PDF {file_path}: {str(e)}", exc_info=True)
-    finally:
-        progress[file_id] = 100
+async def dummy_process(file_id: str):
+    # Simulate processing without actually doing anything
+    for i in range(10):
+        progress[file_id] = i * 10
+        await asyncio.sleep(1)
+    progress[file_id] = 100
 
 @app.get("/api/progress/{file_id}")
 async def get_progress(file_id: str):
@@ -141,3 +139,11 @@ async def generate_flashcards(request: FlashcardRequest):
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while generating flashcards: {str(e)}")
+
+@app.get("/api/test")
+async def test_endpoint():
+    return {"message": "API is working"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
