@@ -8,6 +8,7 @@ ByteBuilder presents a Flashcard Generator, developed for Cal Hacks 11.0. This w
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
 - [Usage](#usage)
+- [Working](#Working)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
 - [Troubleshooting](#troubleshooting)
@@ -72,6 +73,13 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 3. Click "Generate Flashcards" to create your flashcards.
 4. Navigate through the flashcards using the "Previous" and "Next" buttons.
 5. Click on a flashcard to reveal the answer.
+
+## Working
+
+<img width="874" alt="image" src="https://github.com/user-attachments/assets/3374f2a4-a942-4507-a28c-fb944f48f7b7">
+
+Book name:[ https://ehmatthes.github.io/pcc/](https://khwarizmi.org/wp-content/uploads/2021/04/Eric_Matthes_Python_Crash_Course_A_Hands.pdf)
+
 
 ## Project Structure
 
