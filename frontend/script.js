@@ -50,30 +50,32 @@ async function uploadFile() {
             body: formData
         });
         console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
         
-        // Log the raw response text
         const responseText = await response.text();
         console.log('Raw response:', responseText);
         
-        // Try parsing the JSON
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (parseError) {
             console.error('Error parsing JSON:', parseError);
-            throw new Error('Invalid JSON response from server');
+            throw new Error(`Invalid JSON response from server: ${responseText}`);
         }
         
         console.log('Parsed response data:', data);
         
-        if (data.message && data.message.includes("File upload started")) {
-            console.log('File upload successful');
-            alert('File uploaded successfully and processing started!');
-            document.getElementById('generate-section').style.display = 'block';
-            checkProgress(data.file_id);
+        if (response.ok) {
+            if (data.message && data.message.includes("File upload started")) {
+                console.log('File upload successful');
+                alert('File uploaded successfully and processing started!');
+                document.getElementById('generate-section').style.display = 'block';
+                checkProgress(data.file_id);
+            } else {
+                throw new Error(data.error || 'Unknown server response');
+            }
         } else {
-            console.error('Unexpected server response:', data);
-            throw new Error(data.error || 'Unknown server error');
+            throw new Error(data.error || `HTTP error! status: ${response.status}`);
         }
     } catch (error) {
         console.error('Error during file upload:', error);
@@ -82,6 +84,20 @@ async function uploadFile() {
         document.querySelector('.progress').style.display = 'none';
     }
 }
+
+// Add a test function to check if the API is responding
+async function testAPI() {
+    try {
+        const response = await fetch('/api/test');
+        const data = await response.json();
+        console.log('API test response:', data);
+    } catch (error) {
+        console.error('API test error:', error);
+    }
+}
+
+// Call testAPI when the page loads
+document.addEventListener('DOMContentLoaded', testAPI);
 
 async function checkProgress(fileId) {
     const progressBar = document.querySelector('.progress-bar');
