@@ -144,6 +144,4 @@ async def generate_flashcards(request: FlashcardRequest):
 async def test_endpoint():
     return {"message": "API is working"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
