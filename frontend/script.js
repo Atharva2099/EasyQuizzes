@@ -3,18 +3,85 @@ let currentCardIndex = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('upload-btn');
-    const generateForm = document.getElementById('flashcard-form');
+    const flashcardForm = document.getElementById('flashcard-form');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     
     uploadBtn.addEventListener('click', uploadFile);
-    generateForm.addEventListener('submit', handleGenerateFlashcards);
+    flashcardForm.addEventListener('submit', handleGenerateFlashcards);
     prevBtn.addEventListener('click', showPreviousCard);
     nextBtn.addEventListener('click', showNextCard);
 });
 
+async function uploadFile() {
+    console.log('Upload function called');
+    const fileUpload = document.getElementById('file-upload');
+    const file = fileUpload.files[0];
+    if (!file) {
+        console.log('No file selected');
+        alert('Please select a file first.');
+        return;
+    }
+
+    console.log('File selected:', file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        console.log('Sending request to /upload');
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+        });
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.message && data.message.includes("File upload started")) {
+            console.log('File upload successful');
+            alert('File uploaded successfully and processing started!');
+            document.getElementById('generate-section').style.display = 'block';
+            checkProgress(data.file_id);
+        } else {
+            console.error('Unexpected server response:', data);
+            throw new Error(data.error || 'Unknown server error');
+        }
+    } catch (error) {
+        console.error('Error during file upload:', error);
+        alert('An error occurred while uploading the file: ' + error.message);
+    }
+}
+
+async function checkProgress(fileId) {
+    const progressBar = document.getElementById('progress-bar');
+    const uploadProgress = document.getElementById('upload-progress');
+    progressBar.style.display = 'block';
+
+    try {
+        while (true) {
+            const response = await fetch(`/progress/${fileId}`);
+            const data = await response.json();
+            console.log('Progress:', data.progress);
+            
+            uploadProgress.value = data.progress;
+            
+            if (data.progress >= 100) {
+                progressBar.style.display = 'none';
+                alert('File processing complete!');
+                break;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before checking again
+        }
+    } catch (error) {
+        console.error('Error checking progress:', error);
+        progressBar.style.display = 'none';
+    }
+}
+
 async function handleGenerateFlashcards(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
+    event.preventDefault();
     
     const topic = document.getElementById('topics').value.trim();
     const numCards = parseInt(document.getElementById('num-cards').value);
@@ -61,51 +128,8 @@ async function generateFlashcards(topic, numCards) {
         throw new Error(data.error);
     }
     
-    if (data.flashcards.length < numCards) {
-        console.warn(`Requested ${numCards} flashcards, but only ${data.flashcards.length} were generated.`);
-    }
-    
     return data.flashcards;
 }
-
-// ... rest of your code (displayFlashcard, showPreviousCard, showNextCard) ...
-
-async function uploadFile() {
-    console.log('Upload function called');
-    const fileUpload = document.getElementById('file-upload');
-    const file = fileUpload.files[0];
-    if (!file) {
-        console.log('No file selected');
-        alert('Please select a file first.');
-        return;
-    }
-
-    console.log('File selected:', file.name);
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        console.log('Sending request to /upload');
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
-        });
-        console.log('Response status:', response.status);
-        const data = await response.json();
-        console.log('Response data:', data);
-        if (data.message === 'File processed successfully') {
-            alert('File uploaded and processed successfully!');
-            document.getElementById('generate-section').style.display = 'block';
-        } else {
-            alert('Error: ' + (data.error || 'Unknown error occurred'));
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while uploading the file.');
-    }
-}
-
 
 function displayFlashcard() {
     const flashcardDisplay = document.getElementById('flashcard-display');

@@ -37,7 +37,7 @@ Ensure the question is not generic and is specifically related to the given cont
                 }
             ],
             model="llama-3.2-3b-preview",
-            max_tokens=300,  # Increased to accommodate longer response
+            max_tokens=1000,  # Increased to accommodate longer response
             temperature=0.7,
         )
 
