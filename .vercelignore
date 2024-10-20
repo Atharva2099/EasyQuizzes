@@ -6,3 +6,13 @@ __pycache__
 .git
 chroma-collections.parquet
 chroma-embeddings.parquet
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.env
+.idea/
+.vscode/
