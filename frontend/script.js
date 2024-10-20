@@ -50,8 +50,21 @@ async function uploadFile() {
             body: formData
         });
         console.log('Response status:', response.status);
-        const data = await response.json();
-        console.log('Response data:', data);
+        
+        // Log the raw response text
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        // Try parsing the JSON
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            throw new Error('Invalid JSON response from server');
+        }
+        
+        console.log('Parsed response data:', data);
         
         if (data.message && data.message.includes("File upload started")) {
             console.log('File upload successful');
