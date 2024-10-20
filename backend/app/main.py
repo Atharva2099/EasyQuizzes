@@ -42,7 +42,7 @@ progress = {}
 async def read_root():
     return FileResponse(os.path.join(frontend_dir, "index.html"))
 
-@app.post("/upload")
+@app.post("/api/upload")
 async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     logger.info(f"Received file upload request: {file.filename}")
     try:
@@ -83,7 +83,7 @@ async def process_pdf(file_path: str, file_id: str):
     finally:
         progress[file_id] = 100
 
-@app.get("/progress/{file_id}")
+@app.get("/api/progress/{file_id}")
 async def get_progress(file_id: str):
     if file_id not in progress:
         raise HTTPException(status_code=404, detail="File not found")
@@ -94,7 +94,7 @@ class FlashcardRequest(BaseModel):
     num_cards: int = 5
     page: Optional[int] = 1
 
-@app.post("/generate_flashcards", response_model=dict)
+@app.post("/api/generate_flashcards", response_model=dict)
 async def generate_flashcards(request: FlashcardRequest):
     logger.debug(f"Received request: {request}")
     try:
@@ -138,7 +138,3 @@ async def generate_flashcards(request: FlashcardRequest):
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An error occurred while generating flashcards: {str(e)}")
-
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
