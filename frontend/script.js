@@ -6,12 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const flashcardForm = document.getElementById('flashcard-form');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
+    const fileUpload = document.getElementById('file-upload');
     
     uploadBtn.addEventListener('click', uploadFile);
     flashcardForm.addEventListener('submit', handleGenerateFlashcards);
     prevBtn.addEventListener('click', showPreviousCard);
     nextBtn.addEventListener('click', showNextCard);
+    fileUpload.addEventListener('change', updateFileName);
 });
+
+function updateFileName() {
+    const fileUpload = document.getElementById('file-upload');
+    const fileNameDisplay = document.getElementById('file-name');
+    if (fileUpload.files.length > 0) {
+        fileNameDisplay.textContent = `Selected file: ${fileUpload.files[0].name}`;
+    } else {
+        fileNameDisplay.textContent = '';
+    }
+}
 
 async function uploadFile() {
     console.log('Upload function called');
@@ -30,9 +42,17 @@ async function uploadFile() {
 
     try {
         console.log('Sending request to /upload');
+        const progressBar = document.querySelector('.progress-bar');
+        document.querySelector('.progress').style.display = 'block';
+        
         const response = await fetch('/upload', {
             method: 'POST',
-            body: formData
+            body: formData,
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                progressBar.style.width = `${percentCompleted}%`;
+                progressBar.textContent = `${percentCompleted}%`;
+            }
         });
         console.log('Response status:', response.status);
         const data = await response.json();
@@ -50,13 +70,14 @@ async function uploadFile() {
     } catch (error) {
         console.error('Error during file upload:', error);
         alert('An error occurred while uploading the file: ' + error.message);
+    } finally {
+        document.querySelector('.progress').style.display = 'none';
     }
 }
 
 async function checkProgress(fileId) {
-    const progressBar = document.getElementById('progress-bar');
-    const uploadProgress = document.getElementById('upload-progress');
-    progressBar.style.display = 'block';
+    const progressBar = document.querySelector('.progress-bar');
+    document.querySelector('.progress').style.display = 'block';
 
     try {
         while (true) {
@@ -64,19 +85,21 @@ async function checkProgress(fileId) {
             const data = await response.json();
             console.log('Progress:', data.progress);
             
-            uploadProgress.value = data.progress;
+            progressBar.style.width = `${data.progress}%`;
+            progressBar.textContent = `${Math.round(data.progress)}%`;
             
             if (data.progress >= 100) {
-                progressBar.style.display = 'none';
-                alert('File processing complete!');
+                setTimeout(() => {
+                    document.querySelector('.progress').style.display = 'none';
+                }, 1000);
                 break;
             }
             
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before checking again
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     } catch (error) {
         console.error('Error checking progress:', error);
-        progressBar.style.display = 'none';
+        document.querySelector('.progress').style.display = 'none';
     }
 }
 
@@ -146,25 +169,26 @@ function displayFlashcard() {
     
     flashcardDisplay.innerHTML = `
         <div class="flashcard">
-            <div class="question">
-                <h3>Question:</h3>
-                <p>${question}</p>
-                ${options.map(option => `<p>${option}</p>`).join('')}
-            </div>
-            <div class="answer" style="display: none;">
-                <h3>Answer:</h3>
-                <p>${card.answer}</p>
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    <h3>Question:</h3>
+                    <p>${question}</p>
+                    ${options.map(option => `<p>${option}</p>`).join('')}
+                </div>
+                <div class="flashcard-back">
+                    <h3>Answer:</h3>
+                    <p>${card.answer}</p>
+                </div>
             </div>
         </div>
     `;
     
-    flashcardDisplay.querySelector('.flashcard').addEventListener('click', toggleAnswer);
+    flashcardDisplay.querySelector('.flashcard').addEventListener('click', flipCard);
     cardIndexSpan.textContent = `Card ${currentCardIndex + 1} of ${allFlashcards.length}`;
 }
 
-function toggleAnswer() {
-    const answerElement = this.querySelector('.answer');
-    answerElement.style.display = answerElement.style.display === 'none' ? 'block' : 'none';
+function flipCard() {
+    this.classList.toggle('flipped');
 }
 
 function showPreviousCard() {
