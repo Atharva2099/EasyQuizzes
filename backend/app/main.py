@@ -11,6 +11,7 @@ from .ocr import extract_text_from_pdf
 import os
 import logging
 import asyncio
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -42,6 +43,8 @@ progress = {}
 @app.get("/")
 async def read_root():
     return FileResponse(os.path.join(frontend_dir, "index.html"))
+
+handler = Mangum(app)
 
 @app.post("/upload")
 async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
