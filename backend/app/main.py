@@ -34,8 +34,8 @@ project_root = os.path.dirname(os.path.dirname(current_dir))
 # Path to the frontend directory
 frontend_dir = os.path.join(project_root, "frontend")
 
-# Mount the static files directory
-app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+# Mount the frontend directory
+app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
