@@ -1,4 +1,4 @@
 from backend.app.main import app
 from mangum import Mangum
 
-handler = Mangum(app)
+handler = Mangum(app, lifespan="off")
