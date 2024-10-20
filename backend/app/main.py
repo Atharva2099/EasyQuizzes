@@ -56,10 +56,13 @@ async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File
         progress[file_id] = 0
         background_tasks.add_task(process_pdf, file_path, file_id)
         logger.info(f"Background task added for file: {file_id}")
-        return {"message": "File upload started. Processing in background.", "file_id": file_id}
+        
+        response_data = {"message": "File upload started. Processing in background.", "file_id": file_id}
+        logger.info(f"Sending response: {response_data}")
+        return response_data
     except Exception as e:
         logger.error(f"Error during file upload: {str(e)}", exc_info=True)
-        return {"error": f"An error occurred during file upload: {str(e)}"}
+        return JSONResponse(status_code=500, content={"error": f"An error occurred during file upload: {str(e)}"})
 
 async def process_pdf(file_path: str, file_id: str):
     try:
