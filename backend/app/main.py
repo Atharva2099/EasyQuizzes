@@ -42,6 +42,22 @@ progress = {}
 async def read_root():
     return FileResponse(os.path.join(frontend_dir, "index.html"))
 
+CHROMA_DB_PATH = "./chroma_db"
+
+def initialize_chroma_db():
+    if not os.path.exists(CHROMA_DB_PATH):
+        os.makedirs(CHROMA_DB_PATH)
+    
+    client = Client(Settings(persist_directory=CHROMA_DB_PATH))
+    
+    # Check if the collection exists, if not, create it
+    if "flashcards" not in client.list_collections():
+        client.create_collection("flashcards")
+    
+    return client
+
+chroma_client = initialize_chroma_db()
+
 @app.post("/upload")
 async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     logger.info(f"Received file upload request: {file.filename}")
