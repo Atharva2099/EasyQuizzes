@@ -76,9 +76,11 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 
 ## Working
 
+
+Crash course in Python Book Link:[ https://ehmatthes.github.io/pcc/](https://khwarizmi.org/wp-content/uploads/2021/04/Eric_Matthes_Python_Crash_Course_A_Hands.pdf) \\
+
 <img width="874" alt="image" src="https://github.com/user-attachments/assets/3374f2a4-a942-4507-a28c-fb944f48f7b7">
 
-Book name:[ https://ehmatthes.github.io/pcc/](https://khwarizmi.org/wp-content/uploads/2021/04/Eric_Matthes_Python_Crash_Course_A_Hands.pdf)
 
 
 ## Project Structure
