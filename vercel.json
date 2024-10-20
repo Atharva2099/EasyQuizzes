@@ -6,18 +6,18 @@
       "use": "@vercel/python"
     },
     {
-      "src": "frontend/*/",
+      "src": "frontend/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/upload",
-      "dest": "/backend/app/main.py"
+      "dest": "/api"
     },
     {
       "src": "/generate_flashcards",
-      "dest": "/backend/app/main.py"
+      "dest": "/api"
     },
     {
       "src": "/(.*)",
