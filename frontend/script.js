@@ -41,18 +41,13 @@ async function uploadFile() {
     formData.append('file', file);
 
     try {
-        console.log('Sending request to /upload');
+        console.log('Sending request to /api/upload');
         const progressBar = document.querySelector('.progress-bar');
         document.querySelector('.progress').style.display = 'block';
         
-        const response = await fetch('/upload', {
+        const response = await fetch('/api/upload', {
             method: 'POST',
-            body: formData,
-            onUploadProgress: (progressEvent) => {
-                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                progressBar.style.width = `${percentCompleted}%`;
-                progressBar.textContent = `${percentCompleted}%`;
-            }
+            body: formData
         });
         console.log('Response status:', response.status);
         const data = await response.json();
@@ -81,7 +76,7 @@ async function checkProgress(fileId) {
 
     try {
         while (true) {
-            const response = await fetch(`/progress/${fileId}`);
+            const response = await fetch(`/api/progress/${fileId}`);
             const data = await response.json();
             console.log('Progress:', data.progress);
             
@@ -132,7 +127,7 @@ async function handleGenerateFlashcards(event) {
 
 async function generateFlashcards(topic, numCards) {
     console.log(`Generating ${numCards} flashcards for topic: ${topic}`);
-    const response = await fetch('/generate_flashcards', {
+    const response = await fetch('/api/generate_flashcards', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
