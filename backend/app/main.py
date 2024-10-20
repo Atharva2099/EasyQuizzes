@@ -33,7 +33,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 frontend_dir = os.path.join(current_dir, "..", "..", "frontend")
 
 # Mount the static files directory
-app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+app.mount("/", StaticFiles(directory=frontend_dir), name="frontend")
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
