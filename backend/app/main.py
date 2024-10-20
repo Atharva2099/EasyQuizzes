@@ -26,7 +26,8 @@ app.add_middleware(
 # Get the directory of the current file
 current_dir = os.path.dirname(os.path.realpath(__file__))
 # Go up two levels to reach the project root, then into the frontend directory
-frontend_dir = os.path.join(current_dir, "..", "..", "frontend")
+frontend_dir = os.path.join(current_dir, "..", "..", "public")
+#frontend_dir = os.path.join(current_dir, "..", "..", "frontend")
 
 # Mount the static files directory
 app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
