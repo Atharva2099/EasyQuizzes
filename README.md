@@ -38,20 +38,21 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 
 1. Clone the repository:
    
-2. Create a virtual environment:
-   - python -m venv venv
-   - source venv/bin/activate  # On Windows: venv\Scripts\activate
-   
-3. Install dependencies:
+2. Create a virtual environment (for PiP):
 
-   - pip install -r requirements.txt
+         python -m venv venv
+         source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-   or
    
-2. Create and activate the Conda environment:
+4. Install dependencies using PiP(requirements.txt):
+
+        pip install -r requirements.txt
+
+   
+2. Install dependencies using Conda (environment.yml):
      
-     - conda env create -f environment.yml
-     - conda activate flashcard-env
+        conda env create -f environment.yml
+        conda activate flashcard-env
    
 4. Set up environment variables:
 
@@ -61,8 +62,7 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 
 1. Start the FastAPI server:
    
-   python -m uvicorn backend.app.main:app --reload
-
+         python -m uvicorn backend.app.main:app --reload
 
 2. Open a web browser and navigate to `http://Localhost:8000` or whichever is provided by CLI
 
@@ -80,9 +80,6 @@ Flashcard Generator is a web application that allows users to upload PDF documen
 Crash course in Python Book Link:[ https://ehmatthes.github.io/pcc/](https://khwarizmi.org/wp-content/uploads/2021/04/Eric_Matthes_Python_Crash_Course_A_Hands.pdf) <br /><br />
 
 [[<img width="856" alt="image" src="https://github.com/user-attachments/assets/1dff4ab9-1c72-453a-a162-aeb68c7ddedc">]](https://www.youtube.com/watch?v=QGkC77hOxns)
-
-
-
 
 
 
