@@ -14,8 +14,6 @@ ByteBuilder presents a Flashcard Generator, developed for Cal Hacks 11.0. This w
 - [Troubleshooting](#troubleshooting)
 - [Future Improvements](#future-improvements)
 
-[Rest of your README content here]
-
 
 # Flashcard Generator
 
